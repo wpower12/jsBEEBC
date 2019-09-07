@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>SPA</title>
+	<meta name="description" content="JS emulation of Ben Eaters 8-bit computer.">
+	<meta name="author" content="wpower12">
+	<link rel="stylesheet" href="css/index.css">
+	<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/segment7" type="text/css"/>
+</head>
+
+<body>
+	<div class="center">
+		<div class="ebc_wrapper">
+			<div class="A_reg">A
+				<div class="register" id="A_reg">00000000</div>
+			</div>
+			<div class="S_reg">ALU
+				<div class="register" id="S_reg">00000000</div>
+			</div>
+			<div class="B_reg">B
+				<div class="register" id="B_reg">00000000</div>
+			</div>
+			<div class="PC">PC
+				<div class="register" id="PC">0000</div>
+			</div>
+			<div class="MAR">MAR
+				<div class="register" id="MAR">0000</div>
+			</div>
+			<div class="BUS">BUS
+				<div class="register" id="Bus">00000000</div>
+			</div>
+			<div class="CW">
+				Control Word
+				<div>
+					<div class="signal">
+						<div id="cwHT">0</div><div class="label">HT</div>
+					</div>
+					<div class="signal"><div id="cwMI">0</div><div class="label">MI</div></div>
+					<div class="signal"><div id="cwRI">0</div><div class="label">RI</div></div>
+					<div class="signal"><div id="cwRO">0</div><div class="label">RO</div></div>
+					<div class="signal"><div id="cwIO">0</div><div class="label">IO</div></div>
+					<div class="signal"><div id="cwII">0</div><div class="label">II</div></div>
+					<div class="signal"><div id="cwAI">0</div><div class="label">AI</div></div>
+					<div class="signal"><div id="cwAO">0</div><div class="label">AO</div></div>
+					<div class="signal"><div id="cwΣO">0</div><div class="label">ΣO</div></div>
+					<div class="signal"><div id="cwSU">0</div><div class="label">SU</div></div>
+					<div class="signal"><div id="cwBI">0</div><div class="label">BI</div></div>
+					<div class="signal"><div id="cwOI">0</div><div class="label">OI</div></div>
+					<div class="signal"><div id="cwCE">0</div><div class="label">CE</div></div>
+					<div class="signal"><div id="cwCO">0</div><div class="label">CO</div></div>
+					<div class="signal"><div id="cw_J">0</div><div class="label">_J</div></div>
+					<div class="signal"><div id="cwFI">0</div><div class="label">FI</div></div>
+				</div>
+				<br>
+				These signals caused the machine to step into the current state. 
+			</div>
+			<div class="FL">
+				Flags
+				<br>
+				<div class="signal">
+					<div id="CF">0</div>
+					<div class="label">CF</div>
+				</div>
+				<div class="signal">
+					<div id="ZF">0</div>
+					<div class="label">ZF</div>
+				</div>
+			</div>
+			<div class="OUT">
+				OUT 
+				<div id="OUT">0000</div>
+			</div>
+			<div class="RAM">
+				Memory
+				<span class="memory_slot"><div>0000|</div><div id="m0000">00000000</div></span>
+				<span class="memory_slot"><div>0001|</div><div id="m0001">00000000</div></span>
+				<span class="memory_slot"><div>0010|</div><div id="m0010">00000000</div></span>
+				<span class="memory_slot"><div>0011|</div><div id="m0011">00000000</div></span>
+				<span class="memory_slot"><div>0100|</div><div id="m0100">00000000</div></span>
+				<span class="memory_slot"><div>0101|</div><div id="m0101">00000000</div></span>
+				<span class="memory_slot"><div>0110|</div><div id="m0110">00000000</div></span>
+				<span class="memory_slot"><div>0111|</div><div id="m0111">00000000</div></span>
+				<span class="memory_slot"><div>1000|</div><div id="m1000">00000000</div></span>
+				<span class="memory_slot"><div>1001|</div><div id="m1001">00000000</div></span>
+				<span class="memory_slot"><div>1010|</div><div id="m1010">00000000</div></span>
+				<span class="memory_slot"><div>1011|</div><div id="m1011">00000000</div></span>
+				<span class="memory_slot"><div>1100|</div><div id="m1100">00000000</div></span>
+				<span class="memory_slot"><div>1101|</div><div id="m1101">00000000</div></span>
+				<span class="memory_slot"><div>1110|</div><div id="m1110">00000000</div></span>
+				<span class="memory_slot"><div>1111|</div><div id="m1111">00000000</div></span>
+			</div>
+			<div class="IR">
+				IR
+				<br>
+				<div class="center">
+					<div class="inlb">
+						<div class="register" id="IR_I_reg">0000</div>
+						<div class="label">INST</div>
+					</div>
+					<div class="inlb">
+						<div class="register" id="IR_D_reg">0000</div>
+						<div class="label">DATA</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="DECODER">
+				Decoder
+				<br>
+				<div class="STEP_CNT inlb">
+					<div class="register" id="SC_reg">000</div>
+					<div class="label">SC</div>
+					<div>--</div>
+				</div>
+				<div class="INST inlb">
+					<div class="register" id="INST">0000</div>
+					<div class="label">INST</div>
+					<div id="decoded_ir">--</div>
+				</div>
+				<br>
+				Maps to <b>next</b> control word. 
+			</div>
+
+			<div class="CONTROL">
+				<div class="CLK_CONTROL">
+					<button class="btn" id="clk_start">▶/⏸</button>
+					<button class="btn" id="clk_step" >step</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</body>
+<footer>
+	<script src="js/main.js"></script>
+</footer>
+</html>

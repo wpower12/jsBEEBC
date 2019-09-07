@@ -1,0 +1,156 @@
+body {
+	background-color: rgb(245,245,245);
+	font-size: 20;
+}
+
+.ebc_wrapper {
+	display: grid;
+	grid-template-columns: 200px 150px 200px;
+	grid-template-rows: 50px 50px 50px 70px auto auto auto auto;
+	grid-gap: 15px;
+	justify-content: center;
+}
+
+.ebc_wrapper > div {
+	background-color: rgb(232,232,232);
+}
+
+.BUS {
+	grid-column: 2;
+	grid-row: 1 / 3;
+}
+
+.A_reg {
+	grid-column: 3;
+	grid-row: 1;
+}
+
+.S_reg {
+	grid-column: 3;
+	grid-row: 2;
+}
+
+.B_reg {
+	grid-column: 3;
+	grid-row: 3;
+}
+
+
+.PC {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.IC {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.CW {
+	grid-column: 1 / 3;
+	grid-row: 6 / 7;
+	background-color: rgb(232,232,232);
+	width: max-content;
+}
+
+.FL {
+	grid-column:  3;
+	grid-row: 4;
+	background-color: rgb(232,232,232);
+}
+
+.OUT {
+	grid-column:  3;
+	grid-row: 5;
+}
+
+.OUT > div {
+	font-family: 'Segment7Standard'; 
+	text-align: center;
+	font-size: 72px;
+}
+
+.DECODER {
+	grid-column: 2;
+	grid-row: 5;
+	text-align: center;
+}
+
+.STEP_CNT {
+	display: inline-block;
+}
+
+.IR {
+	grid-column: 2;
+	grid-row: 4;
+	display: inline-block;
+}
+
+.CONTROL {
+	grid-column: 3;
+	grid-row: 7;
+	text-align: center;
+}
+
+.RAM {
+	grid-column: 1;
+	grid-row: 2 / 6;
+	margin: 0 auto;
+}
+
+.label {
+	text-align: center;
+}
+
+.register {
+	font-family: monospace;
+	background-color: rgba(50, 115, 220, 0.3);
+	text-align: center;
+	padding: 1px 6px 1px 6px;
+	margin: 2px 2px;
+}
+
+.memory_slot {
+	font-family: monospace;
+	background-color: rgba(50, 115, 220, 0.3);
+	display: flex;
+	padding: 1px 6px 1px 6px;
+	margin: 2px 15px;
+}
+
+.signal {
+	font-family: monospace;
+	background-color: rgba(50, 115, 220, 0.3);
+	padding:1px 6px 1px 6px;
+	margin: 1px 1px;
+	text-align: center;
+	display: inline-block;
+}
+
+.register, .signal, .memory_slot {
+	font-size: 16px;
+}
+
+.label {
+	font-size: 12px;
+}
+
+.btn {
+	margin: 10px;
+}
+
+.inlb {
+	display: inline-block;
+}
+
+.center {
+	text-align: center;
+}
+
+.high {
+	background-color: rgba(220, 64, 50, 0.3);
+}
+
+.CW > div {
+	padding: 0 30px;
+}
