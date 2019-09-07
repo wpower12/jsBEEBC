@@ -95,16 +95,20 @@ class EightBitComp {
 								   0,0,0,0,0];
 		this.MICRO[this.MC.OUT] = [this.SIG.AO | this.SIG.OI,
 								   0,0,0,0,0];
+	    this.MICRO[this.MC.HLT] = [this.SIG.HLT,
+								   0,0,0,0,0];
+	
+		this.running = true;
 	}
 
 	tick(){
-		// ** Advance cpu by one clock cycle
-		console.log("pc: "+this.PC+ " sc: "+this.SC);
-		console.log("IR: "+this.IR.toString(2).padStart(8, '0'));
-		var word = this.decode_instruction(this.SC, this.IR >>> 4);
-		this.CW = word;
-		console.log("cw: "+word.toString(2).padStart(16,'0'));
-		this.update_modules(word);
+		if(this.running){
+			console.log("pc: "+this.PC+ " sc: "+this.SC);
+			var word = this.decode_instruction(this.SC, this.IR >>> 4);
+			this.CW = word;
+			console.log("cw: "+word.toString(2).padStart(16,'0'));
+			this.update_modules(word);
+		}
 	}
 
 	decode_instruction(step, instruction, flags){
@@ -124,15 +128,15 @@ class EightBitComp {
 
 		// Handle Jump Carry
 		if((instruction == this.MC.JC) && 
-		   (flag & this.FLG.CF) &&
-		   (step == 2)){
+		   (flags & this.FLG.CF) &&
+		   (step  == 2)){
 			cw = this.SIG.IO | this.SIG.J;
 		}
 
 		// Handle Zero Carry
 		if((instruction == this.MC.JZ) && 
-		   (flag & this.FLG.ZF) &&
-		   (step == 2)){
+		   (flags & this.FLG.ZF) &&
+		   (step  == 2)){
 			cw = this.SIG.IO | this.SIG.J;
 		}
 		return cw;
@@ -217,6 +221,10 @@ class EightBitComp {
 		}
 		// advance step
 		this.SC = (this.SC + 1) & 0b111;
+
+		if(word & this.SIG.HLT){
+			this.running = false;
+		}
 	}
 };
 export default EightBitComp;
