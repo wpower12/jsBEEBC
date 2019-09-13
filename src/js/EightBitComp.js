@@ -2,8 +2,20 @@ function log_reg(n, r, l){
 	console.log("\t"+n+" "+r.toString(2).padStart(l, '0'));
 }
 
-function log_ma(){
-	
+function log_ma(addy, value, out=true){
+	var msg;
+	if(out){
+		msg = "\tRAM Out [";
+	} else {
+		msg = "\tRAM In [";
+	}
+	console.log(msg+addy+"]="+value);
+}
+
+function log_tick(pc, sc, cw){
+	var msg = "pc: "+pc+" sc: "+sc+" cw: ";
+	msg    += cw.toString(2).padStart(16, '0');
+	console.log(msg);
 }
 
 class EightBitComp {
@@ -74,9 +86,16 @@ class EightBitComp {
 		for (var i = 0; i < this.MICRO.length; i++) {
 			this.MICRO[i] = [0,0,0,0,0,0];
 		}
+		this.load_micro(); // Isolating this to so I can excessivly comment
+						   // the microcode. 
+	
+		this.running = true;
+	}
+
+	load_micro(){
 		this.MICRO[this.MC.NOP] = [0,0,0,0,0,0];
 		this.MICRO[this.MC.LDA] = [this.SIG.IO | this.SIG.MI,							   
-								   this.SIG.RO | this.SIG.AI,
+								   this.SIG.RO | this.SIG.AI, 
 								   0,0,0,0];
 		this.MICRO[this.MC.ADD] = [this.SIG.IO | this.SIG.MI,
 								   this.SIG.RO | this.SIG.BI,
@@ -97,25 +116,24 @@ class EightBitComp {
 								   0,0,0,0,0];
 	    this.MICRO[this.MC.HLT] = [this.SIG.HLT,
 								   0,0,0,0,0];
-	
-		this.running = true;
+		// The Conditional Jumps need 'default' behaviour thats all Noops.
+		this.MICRO[this.MC.JC]  = [0,0,0,0,0,0];
+		this.MICRO[this.MC.JZ]  = [0,0,0,0,0,0];
 	}
 
 	tick(){
 		if(this.running){
-			console.log("pc: "+this.PC+ " sc: "+this.SC);
-			var word = this.decode_instruction(this.SC, this.IR >>> 4);
-			this.CW = word;
-			console.log("cw: "+word.toString(2).padStart(16,'0'));
-			this.update_modules(word);
+			this.CW = this.decode_instruction(this.SC, this.IR >>> 4, this.FLAGS);
+			log_tick(this.PC, this.SC, this.CW);
+			this.update_modules(this.CW);
 		}
 	}
 
 	decode_instruction(step, instruction, flags){
-		// First 2 are easy, the fetch.
+		// Hardcoding the first two steps
 		if(step == 0){
-			return this.SIG.MI | 	// Memory In
-				   this.SIG.CO; 	// Clock Out
+			return this.SIG.MI | 	
+				   this.SIG.CO; 	
 		}
 		if(step == 1){
 			return this.SIG.RO |
@@ -123,35 +141,34 @@ class EightBitComp {
 			       this.SIG.CE;
 		}
 
-		// Handle "normal" microcode - No flag checks needed
-		var cw = this.MICRO[instruction][step-2];
-
 		// Handle Jump Carry
 		if((instruction == this.MC.JC) && 
 		   (flags & this.FLG.CF) &&
 		   (step  == 2)){
-			cw = this.SIG.IO | this.SIG.J;
+			return this.SIG.IO | this.SIG.J;
 		}
 
 		// Handle Zero Carry
 		if((instruction == this.MC.JZ) && 
 		   (flags & this.FLG.ZF) &&
 		   (step  == 2)){
-			cw = this.SIG.IO | this.SIG.J;
+			return this.SIG.IO | this.SIG.J;
 		}
-		return cw;
+
+		// Handle "normal" microcode
+		return this.MICRO[instruction][step-2];
 	}	
 	
 	update_modules(word){
 		// ** Write(ish) ** operations first for timing
 		if(word & this.SIG.RO){	// Ram Out
-			console.log("RAM Out ["+this.MAR+"]="+this.RAM[this.MAR]);
 			this.BUS = this.RAM[this.MAR]; 
+			log_ma(this.MAR, this.RAM[this.MAR]);
 		}
 		if(word & this.SIG.IO){	// Instruction Out
 			// 4 LSB from IR to BUS
 			this.BUS = this.IR & 0b00001111; 
-			log_reg("IR Out", this.IR, 4);
+			log_reg("IR Out", this.IR, 8);
 		} 
 		if(word & this.SIG.AO){	// A Register Out
 			this.BUS = this.A_reg; 
@@ -162,23 +179,31 @@ class EightBitComp {
 			log_reg("Counter Out", this.PC, 4);
 		}
 
-		// ** Add/Sub are the complicated ones. must happen before AI.
-		if(word & this.SIG.EO){
-			var result;
-			if( word & this.SIG.SU ){
-				result = this.A_reg - this.B_reg;
+		// ALU Reg Gets updated every clock cycle
+		var result;
+		if( word & this.SIG.SU ){
+			result = this.A_reg - this.B_reg;
+		} else {
+			result = this.A_reg + this.B_reg;
+		}
+		this.ALU_reg = result & 0b11111111;
 
-			} else {
-				result = this.A_reg + this.B_reg;
-			}
+		// If we're reading in flags, read um' 
+		if(word & this.SIG.FI){
 			this.FLAGS = 0b00;
 			if( result > 0b11111111){
 				this.FLAGS = this.FLAGS & this.FLG.CF;
 			}
 			if( result == 0b00000000){
-				this.FLAGS = this.FLAGS & this.FLG.CF;
+				this.FLAGS = this.FLAGS & this.FLG.ZF;
 			}
-			this.BUS = result & 0b11111111;
+			log_reg("Flags In", this.FLAGS, 2);
+		}
+
+		// ** Add/Sub have the 'complicated' timing. must happen before AI.
+		if(word & this.SIG.EO){
+			this.BUS = this.ALU_reg;
+			log_reg("ALU Out", this.ALU_reg, 8);
 		}
 
 		// ** Read(ish) ** operations. 
@@ -188,11 +213,12 @@ class EightBitComp {
 		} 
 		if(word & this.SIG.RI){
 			this.RAM[this.MAR] = this.BUS;
-			console.log("Ram In: RAM["+this.MAR+"]="+this.BUS.toString(2).padStart(8,'0'));
+			log_ma(this.MAR, this.BUS, false);
+			// console.log("Ram In: RAM["+this.MAR+"]="+this.BUS.toString(2).padStart(8,'0'));
 		} 
 		if(word & this.SIG.II){
 			this.IR = this.BUS;
-			log_reg("IR In", this.IR, 4);
+			log_reg("IR In", this.IR, 8);
 		} 
 		if(word & this.SIG.AI){
 			this.A_reg = this.BUS;	
@@ -200,24 +226,21 @@ class EightBitComp {
 		}
 		if(word & this.SIG.BI){
 			this.B_reg = this.BUS;	
+			log_reg("B In", this.B_reg, 8);
 		}
 		if(word & this.SIG.OI){
 			this.OUT_reg = this.BUS;	
+			log_reg("Out In", this.OUT_reg, 8);
 		}
 		if(word & this.SIG.J){
-			this.PC = this.BUS & 0b00001111; // Only 4 LSB	
+			this.PC = this.BUS & 0b00001111; // Only 4 LSB
+			log_reg("PC In", this.PC, 4);	
 		}
-
-		// if(word & this.SIG.FI){
-		// 	// Noop in this kind of simulation, we only save the flags when 
-		// 	// we want to. 
-		// }
-
 
 		// advance pc
 		if(word & this.SIG.CE){
-			console.log("\tClock Enable");
 			this.PC = (this.PC + 1);
+			log_reg("Counter Enabled", this.PC, 4);
 		}
 		// advance step
 		this.SC = (this.SC + 1) & 0b111;

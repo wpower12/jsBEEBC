@@ -67,7 +67,6 @@ class EBCGUI {
 		this.el_ALU_REG.innerHTML = this.format_register_html(ebc.ALU_reg, 8, true);
 		this.el_SC.innerHTML	  = this.format_register_html(ebc.SC,      3, true);
 
-
 		this.el_IR_I.innerHTML	  = this.format_register_html((ebc.IR >> 4), 4, true);
 		this.el_INST.innerHTML    = this.format_register_html((ebc.IR >> 4), 4, true);
 		this.el_IR_D.innerHTML	  = this.format_register_html((ebc.IR & 0b00001111), 4, true);
