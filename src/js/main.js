@@ -31,7 +31,7 @@ btn_step.onclick = step;
 btn_ss   = document.getElementById('clk_start');
 btn_ss.onclick = startstop;
 
-ebc.RAM = Examples.CountSub2;
+ebc.RAM = Examples.AddSub;
 gui.update_elements(ebc);
 
 

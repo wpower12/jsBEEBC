@@ -192,10 +192,10 @@ class EightBitComp {
 		if(word & this.SIG.FI){
 			this.FLAGS = 0b00;
 			if( result > 0b11111111){
-				this.FLAGS = this.FLAGS & this.FLG.CF;
+				this.FLAGS = this.FLAGS | this.FLG.CF;
 			}
 			if( result == 0b00000000){
-				this.FLAGS = this.FLAGS & this.FLG.ZF;
+				this.FLAGS = this.FLAGS | this.FLG.ZF;
 			}
 			log_reg("Flags In", this.FLAGS, 2);
 		}
