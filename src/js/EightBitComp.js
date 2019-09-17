@@ -1,23 +1,3 @@
-function log_reg(n, r, l){
-	console.log("\t"+n+" "+r.toString(2).padStart(l, '0'));
-}
-
-function log_ma(addy, value, out=true){
-	var msg;
-	if(out){
-		msg = "\tRAM Out [";
-	} else {
-		msg = "\tRAM In [";
-	}
-	console.log(msg+addy+"]="+value);
-}
-
-function log_tick(pc, sc, cw){
-	var msg = "pc: "+pc+" sc: "+sc+" cw: ";
-	msg    += cw.toString(2).padStart(16, '0');
-	console.log(msg);
-}
-
 class EightBitComp {
 	constructor(){
 		this.PC      = 0b0000;		// Program Counter
@@ -80,23 +60,8 @@ class EightBitComp {
 			HLT: 0b1111 
 		}
 
-		// Microcode Steps - Without the first 2 steps, hardcode that later.
-		// 				   - Note, makes the noop steps the default. 
-		this.MICRO = [16];
-		for (var i = 0; i < this.MICRO.length; i++) {
-			this.MICRO[i] = [0,0,0,0,0,0];
-		}
-		this.load_micro(); // Isolating this to so I can excessivly comment
-						   // the microcode. 
-	
-		this.running = true;
-	}
-
-	load_micro(){
-		this.MICRO[this.MC.NOP] = [0,0,0,0,0,0];
-		this.MICRO[this.MC.LDA] = [this.SIG.IO | this.SIG.MI,							   
-								   this.SIG.RO | this.SIG.AI, 
-								   0,0,0,0];
+		// Microcode - Without the first 2 steps, hardcoded later.
+		this.MICRO = [];
 		this.MICRO[this.MC.ADD] = [this.SIG.IO | this.SIG.MI,
 								   this.SIG.RO | this.SIG.BI,
 								   this.SIG.EO | this.SIG.AI | this.SIG.FI,
@@ -105,6 +70,9 @@ class EightBitComp {
 								   this.SIG.RO | this.SIG.BI,
 								   this.SIG.EO | this.SIG.AI | this.SIG.SU | this.SIG.FI,
 								   0,0,0];
+		this.MICRO[this.MC.LDA] = [this.SIG.IO | this.SIG.MI,							   
+								   this.SIG.RO | this.SIG.AI, 
+								   0,0,0,0];
 		this.MICRO[this.MC.STA] = [this.SIG.IO | this.SIG.MI,
 								   this.SIG.AO | this.SIG.RI,
 								   0,0,0,0];
@@ -116,21 +84,24 @@ class EightBitComp {
 								   0,0,0,0,0];
 	    this.MICRO[this.MC.HLT] = [this.SIG.HLT,
 								   0,0,0,0,0];
-		// The Conditional Jumps need 'default' behaviour thats all Noops.
+		this.MICRO[this.MC.NOP] = [0,0,0,0,0,0];
 		this.MICRO[this.MC.JC]  = [0,0,0,0,0,0];
 		this.MICRO[this.MC.JZ]  = [0,0,0,0,0,0];
+	
+		this.running = true;
+		this.debug = true;
 	}
 
 	tick(){
 		if(this.running){
 			this.CW = this.decode_instruction(this.SC, this.IR >>> 4, this.FLAGS);
-			log_tick(this.PC, this.SC, this.CW);
+			log_tick(this.PC, this.SC, this.CW, this.debug);
 			this.update_modules(this.CW);
 		}
 	}
 
 	decode_instruction(step, instruction, flags){
-		// Hardcoding the first two steps
+		// Hardcoding the first two steps - "Fetch"
 		if(step == 0){
 			return this.SIG.MI | 	
 				   this.SIG.CO; 	
@@ -155,7 +126,8 @@ class EightBitComp {
 			return this.SIG.IO | this.SIG.J;
 		}
 
-		// Handle "normal" microcode
+		// Handle "normal" microcode - Note the MICRO array starts at
+		//                             the 2th step. 
 		return this.MICRO[instruction][step-2];
 	}	
 	
@@ -163,20 +135,20 @@ class EightBitComp {
 		// ** Write(ish) ** operations first for timing
 		if(word & this.SIG.RO){	// Ram Out
 			this.BUS = this.RAM[this.MAR]; 
-			log_ma(this.MAR, this.RAM[this.MAR]);
+			log_ma(this.MAR, this.RAM[this.MAR], true, this.debug);
 		}
 		if(word & this.SIG.IO){	// Instruction Out
 			// 4 LSB from IR to BUS
 			this.BUS = this.IR & 0b00001111; 
-			log_reg("IR Out", this.IR, 8);
+			log_reg("IR Out", this.IR, 8, this.debug);
 		} 
 		if(word & this.SIG.AO){	// A Register Out
 			this.BUS = this.A_reg; 
-			log_reg("A Out", this.A_reg, 8);
+			log_reg("A Out", this.A_reg, 8, this.debug);
 		}
 		if(word & this.SIG.CO){
 			this.BUS = this.PC;
-			log_reg("Counter Out", this.PC, 4);
+			log_reg("Counter Out", this.PC, 4, this.debug);
 		}
 
 		// ALU Reg Gets updated every clock cycle
@@ -188,7 +160,6 @@ class EightBitComp {
 		}
 		this.ALU_reg = result & 0b11111111;
 
-		// If we're reading in flags, read um' 
 		if(word & this.SIG.FI){
 			this.FLAGS = 0b00;
 			if( result > 0b11111111){
@@ -197,50 +168,49 @@ class EightBitComp {
 			if( result == 0b00000000){
 				this.FLAGS = this.FLAGS | this.FLG.ZF;
 			}
-			log_reg("Flags In", this.FLAGS, 2);
+			log_reg("Flags In", this.FLAGS, 2, this.debug);
 		}
 
 		// ** Add/Sub have the 'complicated' timing. must happen before AI.
 		if(word & this.SIG.EO){
 			this.BUS = this.ALU_reg;
-			log_reg("ALU Out", this.ALU_reg, 8);
+			log_reg("ALU Out", this.ALU_reg, 8, this.debug);
 		}
 
 		// ** Read(ish) ** operations. 
 		if(word & this.SIG.MI){
 			this.MAR = this.BUS & 0b00001111;
-			log_reg("MAR In", this.MAR, 4);
+			log_reg("MAR In", this.MAR, 4, this.debug);
 		} 
 		if(word & this.SIG.RI){
 			this.RAM[this.MAR] = this.BUS;
-			log_ma(this.MAR, this.BUS, false);
-			// console.log("Ram In: RAM["+this.MAR+"]="+this.BUS.toString(2).padStart(8,'0'));
+			log_ma(this.MAR, this.BUS, false, this.debug);
 		} 
 		if(word & this.SIG.II){
 			this.IR = this.BUS;
-			log_reg("IR In", this.IR, 8);
+			log_reg("IR In", this.IR, 8, this.debug);
 		} 
 		if(word & this.SIG.AI){
 			this.A_reg = this.BUS;	
-			log_reg("A In", this.A_reg, 8);
+			log_reg("A In", this.A_reg, 8, this.debug);
 		}
 		if(word & this.SIG.BI){
 			this.B_reg = this.BUS;	
-			log_reg("B In", this.B_reg, 8);
+			log_reg("B In", this.B_reg, 8, this.debug);
 		}
 		if(word & this.SIG.OI){
 			this.OUT_reg = this.BUS;	
-			log_reg("Out In", this.OUT_reg, 8);
+			log_reg("Out In", this.OUT_reg, 8, this.debug);
 		}
 		if(word & this.SIG.J){
 			this.PC = this.BUS & 0b00001111; // Only 4 LSB
-			log_reg("PC In", this.PC, 4);	
+			log_reg("PC In", this.PC, 4, this.debug);	
 		}
 
 		// advance pc
 		if(word & this.SIG.CE){
 			this.PC = (this.PC + 1);
-			log_reg("Counter Enabled", this.PC, 4);
+			log_reg("Counter Enabled", this.PC, 4, this.debug);
 		}
 		// advance step
 		this.SC = (this.SC + 1) & 0b111;
@@ -250,4 +220,34 @@ class EightBitComp {
 		}
 	}
 };
+
+
+// ** Logging functions **
+// Generic Register-Bus Interaction
+function log_reg(n, r, l, debug){
+	if(debug){
+		console.log("\t"+n+" "+r.toString(2).padStart(l, '0'));
+	}
+}
+// Memory Access
+function log_ma(addy, value, out, debug){
+	if(debug){
+		var msg;
+		if(out){
+			msg = "\tRAM Out [";
+		} else {
+			msg = "\tRAM In [";
+		}
+		console.log(msg+addy+"]="+value);
+	}
+}
+// Summarize a tick
+function log_tick(pc, sc, cw, debug){
+	if(debug){
+		var msg = "pc: "+pc+" sc: "+sc+" cw: ";
+		msg    += cw.toString(2).padStart(16, '0');
+		console.log(msg);
+	}
+}
+
 export default EightBitComp;

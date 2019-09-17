@@ -5,8 +5,9 @@ Examples     = require("./Examples");
 ebc = new EightBitComp();
 gui = new EBCGUI();
 
-var DELAY = 5;
+ebc.debug = false;
 
+var DELAY = 5;
 var running = false;
 var timer;
 
