@@ -75,7 +75,7 @@ class Assembler {
 				// then increment LC
 		}
 		log_mc(mc);
-		return [1, mc];
+		return [0, mc];
 	}
 };
 

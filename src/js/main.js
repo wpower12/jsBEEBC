@@ -49,6 +49,7 @@ function assemble(){
 
 	if(res[0] == 0){         // Error code of 0 == no error
 		ebc.RAM = res[1];    // Means we can safely dump result into ram.
+		ebc_gui.update_elements(ebc);
 	} else {
 		console.log("Error in assembly: "+res[0]);
 	}
