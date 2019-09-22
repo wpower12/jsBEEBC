@@ -73,22 +73,38 @@
 			</div>
 			<div class="RAM">
 				Memory
-				<span class="memory_slot"><div>0000|</div><div id="m0000">00000000</div></span>
-				<span class="memory_slot"><div>0001|</div><div id="m0001">00000000</div></span>
-				<span class="memory_slot"><div>0010|</div><div id="m0010">00000000</div></span>
-				<span class="memory_slot"><div>0011|</div><div id="m0011">00000000</div></span>
-				<span class="memory_slot"><div>0100|</div><div id="m0100">00000000</div></span>
-				<span class="memory_slot"><div>0101|</div><div id="m0101">00000000</div></span>
-				<span class="memory_slot"><div>0110|</div><div id="m0110">00000000</div></span>
-				<span class="memory_slot"><div>0111|</div><div id="m0111">00000000</div></span>
-				<span class="memory_slot"><div>1000|</div><div id="m1000">00000000</div></span>
-				<span class="memory_slot"><div>1001|</div><div id="m1001">00000000</div></span>
-				<span class="memory_slot"><div>1010|</div><div id="m1010">00000000</div></span>
-				<span class="memory_slot"><div>1011|</div><div id="m1011">00000000</div></span>
-				<span class="memory_slot"><div>1100|</div><div id="m1100">00000000</div></span>
-				<span class="memory_slot"><div>1101|</div><div id="m1101">00000000</div></span>
-				<span class="memory_slot"><div>1110|</div><div id="m1110">00000000</div></span>
-				<span class="memory_slot"><div>1111|</div><div id="m1111">00000000</div></span>
+				<span class="memory_slot">
+					<div>0000|</div><div id="m0000">00000000</div></span>
+				<span class="memory_slot">
+					<div>0001|</div><div id="m0001">00000000</div></span>
+				<span class="memory_slot">
+					<div>0010|</div><div id="m0010">00000000</div></span>
+				<span class="memory_slot">
+					<div>0011|</div><div id="m0011">00000000</div></span>
+				<span class="memory_slot">
+					<div>0100|</div><div id="m0100">00000000</div></span>
+				<span class="memory_slot">
+					<div>0101|</div><div id="m0101">00000000</div></span>
+				<span class="memory_slot">
+					<div>0110|</div><div id="m0110">00000000</div></span>
+				<span class="memory_slot">
+					<div>0111|</div><div id="m0111">00000000</div></span>
+				<span class="memory_slot">
+					<div>1000|</div><div id="m1000">00000000</div></span>
+				<span class="memory_slot">
+					<div>1001|</div><div id="m1001">00000000</div></span>
+				<span class="memory_slot">
+					<div>1010|</div><div id="m1010">00000000</div></span>
+				<span class="memory_slot">
+					<div>1011|</div><div id="m1011">00000000</div></span>
+				<span class="memory_slot">
+					<div>1100|</div><div id="m1100">00000000</div></span>
+				<span class="memory_slot">
+					<div>1101|</div><div id="m1101">00000000</div></span>
+				<span class="memory_slot">
+					<div>1110|</div><div id="m1110">00000000</div></span>
+				<span class="memory_slot">
+					<div>1111|</div><div id="m1111">00000000</div></span>
 			</div>
 			<div class="IR">
 				IR
@@ -128,7 +144,12 @@
 					<button class="btn" id="clk_step" >step</button>
 				</div>
 			</div>
-
+		</div>
+		<div class="ass_wrapper">
+			<form class="edit_wrapper" id="ass_form">
+				<textarea id="ass_in"></textarea>
+				<input type="submit" id="ass_sub" value="Assemble">
+			</form>
 		</div>
 	</div>
 </body>

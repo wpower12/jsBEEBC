@@ -52,3 +52,16 @@ export let AddSub = [
 	0b00000000, // [14] 
 	0b00000001];// [15] 1
 
+export let AddSub_Src = 
+`ADD_LOOP
+ 	OUT
+	ADD ONE
+	JC SUB_LOOP
+	JMP ADD_LOOP
+SUB_LOOP
+	SUB ONE
+	OUT
+	JZ ADD_LOOP
+	JMP SUB_LOOP
+ONE
+	1`;
