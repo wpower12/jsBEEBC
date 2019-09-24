@@ -54,14 +54,14 @@ export let AddSub = [
 
 export let AddSub_Src = 
 `ADD_LOOP
- 	OUT
-	ADD ONE
-	JC SUB_LOOP
-	JMP ADD_LOOP
+  OUT
+  ADD ONE
+  JC SUB_LOOP
+  JMP ADD_LOOP
 SUB_LOOP
-	SUB ONE
-	OUT
-	JZ ADD_LOOP
-	JMP SUB_LOOP
+  SUB ONE
+  OUT
+  JZ ADD_LOOP
+  JMP SUB_LOOP
 ONE
-	1`;
+  1`;

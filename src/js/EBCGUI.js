@@ -58,7 +58,6 @@ class EBCGUI {
 
 	update_elements(ebc){
 		// Registers
-
 		this.el_PC.innerHTML      = this.format_register_html(ebc.PC,      4, true);
 		this.el_MAR.innerHTML     = this.format_register_html(ebc.MAR,     4, true);
 		this.el_BUS.innerHTML     = this.format_register_html(ebc.BUS,     8, true);

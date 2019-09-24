@@ -98,6 +98,15 @@ body {
 	margin: 0 auto;
 }
 
+.ass_wrapper {
+	grid-column: 1;
+	grid-row: 7 / 9;
+}
+
+.ass_wrapper > form > textarea {
+	height: 200px;
+}
+
 .label {
 	text-align: center;
 }
@@ -112,10 +121,13 @@ body {
 
 .memory_slot {
 	font-family: monospace;
-	background-color: rgba(50, 115, 220, 0.3);
 	display: flex;
-	padding: 1px 6px 1px 6px;
-	margin: 2px 15px;
+}
+
+.memory_slot > div {
+	background-color: rgba(50, 115, 220, 0.3);
+	padding: 1px 6px;
+	margin: 2px 5px;
 }
 
 .signal {
@@ -154,3 +166,25 @@ body {
 .CW > div {
 	padding: 0 30px;
 }
+
+.hidden {
+	display: none;
+}
+
+input[type="text"] {
+	font-family: monospace;
+	font-size: 20;
+	color: black;
+	border: 0px;
+	padding: 1px 6px;
+	margin: 2px 5px;
+	background-color: rgba(50, 115, 220, 0.3);
+}
+
+.memory_slot > input[type="button"]{
+	background-color: rgba(50, 115, 220, 0.3);
+	border: 0px;
+	padding: 1px 6px;
+	margin: 2px 5px;
+}
+

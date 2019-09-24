@@ -1,10 +1,5 @@
 class Assembler {
 	constructor(){
-		// Need an object that can map from the OPCODE MNENOMIC to the 
-		// specifics of that opcode, specifically, the actual machine 
-		// code value for it and its number of operands. For this 
-		// 'computer' all operations are the same length - 1 word
-		// so it should be easy?
 		//  [OPC,  MC, # of Operands]
 		this.OP_MNE = {
 			'NOP': [0b0000, 0], 
@@ -18,13 +13,13 @@ class Assembler {
 			'JZ':  [0b1000, 1],
 			'OUT': [0b1110, 0], 
 			'HLT': [0b1111, 0]};
+		this.debug = false;
 	}
 
 	assemble(src){
 		// First pass - Fill in the symbol table
 		var lc = 0;
 		var symbol_table = [];
-		
 		var token;
 		var src_lines = src.split("\n");
 		for (var i = 0; i < src_lines.length; i++) {
@@ -35,7 +30,6 @@ class Assembler {
 				lc += 1;
 			}
 		}
-		console.log(symbol_table);
 
 		// Second pass - build the actual machine code 
 		var mc = [16];
@@ -53,11 +47,10 @@ class Assembler {
 					mc[lc] = parseInt(tokens[0]);
 				} else {
 					op = this.OP_MNE[tokens[0]];
-					if (op[1] == 0) {
+					if (op[1] == 0) { // If 0 operand op
 						mc[lc] = op[0] << 4;
 					} else {
 						if(is_symbol(tokens[1], this.OP_MNE)){
-							console.log((op[0] << 4), symbol_table[tokens[1]])
 							mc[lc] = (op[0] << 4) | symbol_table[tokens[1]];
 						} else {
 							mc[lc] = (op[0] << 4) | parseInt(tokens[1]);
@@ -66,15 +59,8 @@ class Assembler {
 				}
 				lc += 1;
 			} 
-			// Tokenize Line
-			// If first token is a symbol
-				// Do nothing
-			// Else
-				// Output MC to i-th slot in MC
-				// Use Symbol Table to 'translate' when needed
-				// then increment LC
 		}
-		log_mc(mc);
+		log_mc(mc, this.debug);
 		return [0, mc];
 	}
 };
@@ -82,13 +68,6 @@ class Assembler {
 function get_tokens(l){
 	return l.trim().split(/\s+/);
 }
-
-// function is_opcode(token, ops){
-// 	for (var i = 0; i < ops.length; i++) {
-// 		if(token == ops[i][0]) return true;
-// 	}
-// 	return false;
-// }
 
 function is_opcode(token, ops){
 	return token in ops;
@@ -102,11 +81,12 @@ function is_symbol(token, ops){
 	return !(is_opcode(token, ops) || is_int_literal(token));
 }
 
-function log_mc(mc){
-	for (var i = 0; i < 16; i++) {
-		console.log("0b"+mc[i].toString(2).padStart(8, '0'));
+function log_mc(mc, debug){
+	if(debug){
+		for (var i = 0; i < 16; i++) {
+			console.log("0b"+mc[i].toString(2).padStart(8, '0'));
+		}
 	}
-
 }
 
 export default Assembler;

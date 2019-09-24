@@ -89,7 +89,7 @@ class EightBitComp {
 		this.MICRO[this.MC.JZ]  = [0,0,0,0,0,0];
 	
 		this.running = true;
-		this.debug = true;
+		this.debug = false;
 	}
 
 	tick(){
@@ -218,6 +218,20 @@ class EightBitComp {
 		if(word & this.SIG.HLT){
 			this.running = false;
 		}
+	}
+
+	reset_not_RAM(){
+		this.PC      = 0b0000;		
+		this.MAR     = 0b0000;		
+		this.A_reg   = 0b00000000;	
+		this.B_reg   = 0b00000000;	
+		this.ALU_reg = 0b00000000;	
+		this.OUT_reg = 0b00000000;  
+		this.IR      = 0b00000000; 
+		this.SC      = 0b000; 		
+		this.FLAGS   = 0b00;		
+		this.BUS     = 0b00000000;  
+		this.CW= 0b0000000000000000;
 	}
 };
 
