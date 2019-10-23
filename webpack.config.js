@@ -4,7 +4,7 @@ module.exports = {
   entry: './src/js/main.js',
   mode: 'development',
   output: {
-    filename: 'main.js',
+    filename: 'beebc_bundle.js',
     path: path.resolve(__dirname, 'dist/js')
   }
 };

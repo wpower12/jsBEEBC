@@ -5,7 +5,7 @@
 	<title>SAP-1</title>
 	<meta name="description" content="JS emulation of Ben Eaters 8-bit computer.">
 	<meta name="author" content="wpower12">
-	<link rel="stylesheet" href="css/index.css">
+	<link rel="stylesheet" href="../styles/beebc.css">
 	<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/segment7" type="text/css"/>
 </head>
 
@@ -33,24 +33,38 @@
 			<div class="CW">
 				CONTROL WORD
 				<div>
-					<div class="signal">
-						<div id="cwHT">0</div><div class="label">HLT</div>
-					</div>
-					<div class="signal"><div id="cwMI">0</div><div class="label">MI</div></div>
-					<div class="signal"><div id="cwRI">0</div><div class="label">RI</div></div>
-					<div class="signal"><div id="cwRO">0</div><div class="label">RO</div></div>
-					<div class="signal"><div id="cwIO">0</div><div class="label">IO</div></div>
-					<div class="signal"><div id="cwII">0</div><div class="label">II</div></div>
-					<div class="signal"><div id="cwAI">0</div><div class="label">AI</div></div>
-					<div class="signal"><div id="cwAO">0</div><div class="label">AO</div></div>
-					<div class="signal"><div id="cwΣO">0</div><div class="label">ΣO</div></div>
-					<div class="signal"><div id="cwSU">0</div><div class="label">SU</div></div>
-					<div class="signal"><div id="cwBI">0</div><div class="label">BI</div></div>
-					<div class="signal"><div id="cwOI">0</div><div class="label">OI</div></div>
-					<div class="signal"><div id="cwCE">0</div><div class="label">CE</div></div>
-					<div class="signal"><div id="cwCO">0</div><div class="label">CO</div></div>
-					<div class="signal"><div id="cw_J">0</div><div class="label">_J</div></div>
-					<div class="signal"><div id="cwFI">0</div><div class="label">FI</div></div>
+					<div class="signal tooltip" title="Halt Signal">
+						<div id="cwHT">0</div><div class="label">HLT</div></div>
+					<div class="signal tooltip" title="Memory Address Register In">
+						<div id="cwMI">0</div><div class="label">MI</div></div>
+					<div class="signal tooltip" title="RAM Data In - To the location in the MAR">
+						<div id="cwRI">0</div><div class="label">RI</div></div>
+					<div class="signal tooltip" title="RAM Data Out to Bus - From the location in the MAR">
+						<div id="cwRO">0</div><div class="label">RO</div></div>
+					<div class="signal tooltip" title="Instruction Register Out - Just the 4 least significant bits">
+						<div id="cwIO">0</div><div class="label">IO</div></div>
+					<div class="signal tooltip" title="Instruction Register In">
+						<div id="cwII">0</div><div class="label">II</div></div>
+					<div class="signal tooltip" title="A Register In">
+						<div id="cwAI">0</div><div class="label">AI</div></div>
+					<div class="signal tooltip" title="A Register Out">
+						<div id="cwAO">0</div><div class="label">AO</div></div>
+					<div class="signal tooltip" title="ALU Register Out">
+						<div id="cwΣO">0</div><div class="label">ΣO</div></div>
+					<div class="signal tooltip" title="Subtract Signal">
+						<div id="cwSU">0</div><div class="label">SU</div></div>
+					<div class="signal tooltip" title="B Register In">
+						<div id="cwBI">0</div><div class="label">BI</div></div>
+					<div class="signal tooltip" title="Output Register In (The display)">
+						<div id="cwOI">0</div><div class="label">OI</div></div>
+					<div class="signal tooltip" title="Counter Enable - Clock will increase the PC">
+						<div id="cwCE">0</div><div class="label">CE</div></div>
+					<div class="signal tooltip" title="Program Counter Out">
+						<div id="cwCO">0</div><div class="label">CO</div></div>
+					<div class="signal tooltip" title="Jump - Program Counter In">
+						<div id="cw_J">0</div><div class="label">_J</div></div>
+					<div class="signal tooltip" title="Flags Register In - Store any flags from most recent ALU operation.">
+						<div id="cwFI">0</div><div class="label">FI</div></div>
 				</div>
 				<br>
 				These signals caused the machine to step into the current state. 
@@ -58,11 +72,11 @@
 			<div class="FL">
 				FLAGS
 				<br>
-				<div class="signal">
+				<div class="signal tooltip" title="Carry Flag - If most recent ALU operation carried over, '9th bit was set'">
 					<div id="CF">0</div>
 					<div class="label">CF</div>
 				</div>
-				<div class="signal">
+				<div class="signal tooltip" title="Zero Flag - If most recent ALU operation resulted in 0">
 					<div id="ZF">0</div>
 					<div class="label">ZF</div>
 				</div>
@@ -174,11 +188,11 @@
 				IR
 				<br>
 				<div class="center">
-					<div class="inlb">
+					<div class="inlb tooltip" title="The 4 most significant bits of the IR encode the instruction, aka the OPCODE">
 						<div class="register" id="IR_I_reg">0000</div>
 						<div class="label">INST</div>
 					</div>
-					<div class="inlb">
+					<div class="inlb tooltip" title="The 4 least significant bits are the data for the operation.">
 						<div class="register" id="IR_D_reg">0000</div>
 						<div class="label">DATA</div>
 					</div>
@@ -219,6 +233,11 @@
 	</div>
 </body>
 <footer>
-	<script src="js/main.js"></script>
+	<script src="js/beebc_bundle.js"></script>
+	<script>
+        $(document).ready(function() {
+            $('.tooltip').tooltipster();
+        });
+    </script>
 </footer>
 </html>

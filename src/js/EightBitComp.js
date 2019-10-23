@@ -146,76 +146,76 @@ class EightBitComp {
 			this.BUS = this.A_reg; 
 			log_reg("A Out", this.A_reg, 8, this.debug);
 		}
-		if(word & this.SIG.CO){
+		if(word & this.SIG.CO){ // Program Counter Out
 			this.BUS = this.PC;
 			log_reg("Counter Out", this.PC, 4, this.debug);
 		}
 
 		// ALU Reg Gets updated every clock cycle
 		var result;
-		if( word & this.SIG.SU ){
+		if( word & this.SIG.SU ){	// Subtract Signal 
 			result = this.A_reg - this.B_reg;
-		} else {
+		} else {					// Add
 			result = this.A_reg + this.B_reg;
 		}
 		this.ALU_reg = result & 0b11111111;
 
-		if(word & this.SIG.FI){
+		if(word & this.SIG.FI){		// Flags In
 			this.FLAGS = 0b00;
-			if( result > 0b11111111){
+			if( result > 0b11111111){ 	// Carry 
 				this.FLAGS = this.FLAGS | this.FLG.CF;
 			}
-			if( result == 0b00000000){
+			if( result == 0b00000000){	// Zero
 				this.FLAGS = this.FLAGS | this.FLG.ZF;
 			}
 			log_reg("Flags In", this.FLAGS, 2, this.debug);
 		}
 
 		// ** Add/Sub have the 'complicated' timing. must happen before AI.
-		if(word & this.SIG.EO){
+		if(word & this.SIG.EO){	// ALU Register Out
 			this.BUS = this.ALU_reg;
 			log_reg("ALU Out", this.ALU_reg, 8, this.debug);
 		}
 
 		// ** Read(ish) ** operations. 
-		if(word & this.SIG.MI){
+		if(word & this.SIG.MI){ // Memory Address Register In
 			this.MAR = this.BUS & 0b00001111;
 			log_reg("MAR In", this.MAR, 4, this.debug);
 		} 
-		if(word & this.SIG.RI){
+		if(word & this.SIG.RI){ // RAM In (at MAR location)
 			this.RAM[this.MAR] = this.BUS;
 			log_ma(this.MAR, this.BUS, false, this.debug);
 		} 
-		if(word & this.SIG.II){
+		if(word & this.SIG.II){ // Instruction Register In
 			this.IR = this.BUS;
 			log_reg("IR In", this.IR, 8, this.debug);
 		} 
-		if(word & this.SIG.AI){
+		if(word & this.SIG.AI){ // A Register In
 			this.A_reg = this.BUS;	
 			log_reg("A In", this.A_reg, 8, this.debug);
 		}
-		if(word & this.SIG.BI){
+		if(word & this.SIG.BI){ // B Register In
 			this.B_reg = this.BUS;	
 			log_reg("B In", this.B_reg, 8, this.debug);
 		}
-		if(word & this.SIG.OI){
+		if(word & this.SIG.OI){ // Output Register In
 			this.OUT_reg = this.BUS;	
 			log_reg("Out In", this.OUT_reg, 8, this.debug);
 		}
-		if(word & this.SIG.J){
+		if(word & this.SIG.J){ // Jump - Program Counter In
 			this.PC = this.BUS & 0b00001111; // Only 4 LSB
 			log_reg("PC In", this.PC, 4, this.debug);	
 		}
 
-		// advance pc
+		// Advance PC on Counter Enable Signal
 		if(word & this.SIG.CE){
 			this.PC = (this.PC + 1);
 			log_reg("Counter Enabled", this.PC, 4, this.debug);
 		}
-		// advance step
+		// Advance Step Counter 
 		this.SC = (this.SC + 1) & 0b111;
 
-		if(word & this.SIG.HLT){
+		if(word & this.SIG.HLT){ // 
 			this.running = false;
 		}
 	}
