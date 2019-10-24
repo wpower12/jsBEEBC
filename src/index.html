@@ -86,7 +86,7 @@
 				<div id="OUT">0000</div>
 			</div>
 			<div class="RAM">
-				Memory
+				<span class="tooltip" title="Click on a memory slot to edit its content. Click the icon to save.">RAM</span>
 				<span class="memory_slot">
 					<div>0000</div>
 					<div   id="m0000">00000000</div>
@@ -228,6 +228,10 @@
 					<textarea id="ass_in"></textarea><br>
 					<input type="submit" id="ass_sub" value="Assemble">
 				</form>
+			</div>
+			<div class="README">
+				<p>	This is an example emulation of the Simple-As-Possible 1 CPU (SAP-1), as described in the amazing <a href="https://www.youtube.com/playlist?list=PLowKtXNTBypGqImE405J2565dvjafglHU">youtube series</a> by <a href="https://eater.net/">Ben Eater</a>. It includes a simple assembler that makes use of the machine code pneumonics laid out in the videos. Each RAM cell can be edited by clicking on it. I tried to include some tooltips that give simple explanations of the control signals.</p>
+				<p>	This site is built with NPM for ease of organization (mostly just for require), along with a library for the tooltip functionality; <a href="https://iamceege.github.io/tooltipster/">tooltipster</a>. Code for the site can be found <a href="https://github.com/wpower12/jsBEEBC">here</a>.</p>
 			</div>
 		</div>
 	</div>
