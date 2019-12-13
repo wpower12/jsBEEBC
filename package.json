@@ -11,7 +11,7 @@
   "author": "wpower12",
   "license": "ISC",
   "dependencies": {
-    "npm": "^6.12.0",
+    "npm": "^6.13.4",
     "tooltipster": "^4.2.7"
   },
   "devDependencies": {
